@@ -1,0 +1,182 @@
+/* --- 1. FUENTES Y VARIABLES --- */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --bg-dark: #0a0a0a;
+    --card-bg: #111111;
+    --neon-blue: #00f3ff;
+    --neon-purple: #bc13fe;
+    --text-lilac: #e0aaff; /* Lila Brillante */
+    --text-main: #ffffff;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+h1, h2, h5, .navbar-brand {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+}
+
+/* --- 2. BARRA DE NAVEGACIÓN --- */
+.navbar {
+    background: rgba(10, 10, 10, 0.95) !important;
+    border-bottom: 1px solid var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.navbar-brand { color: var(--neon-blue) !important; text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+.nav-link, .btn-outline-light { color: white !important; }
+
+/* --- 3. TARJETAS --- */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    color: white;
+}
+.card-header {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid #333;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+/* --- 4. FORMULARIOS --- */
+.form-control, .form-select {
+    background-color: #000 !important;
+    border: 1px solid #444;
+    color: #fff !important;
+    font-weight: 500;
+}
+
+.input-group-text {
+    background-color: #222;
+    border: 1px solid #444;
+    color: var(--neon-blue);
+}
+
+.form-label, label {
+    color: var(--text-lilac) !important;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    text-shadow: 0 0 5px rgba(224, 170, 255, 0.3);
+}
+
+.text-muted { color: #a0a0a0 !important; }
+
+.form-control:focus {
+    background-color: #111 !important;
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
+    color: #fff !important;
+}
+
+::placeholder { color: #555 !important; }
+
+/* --- 5. LOGIN --- */
+.login-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 320px;
+    padding: 1.5rem;
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+}
+
+/* --- 6. BOTONES Y MAPA --- */
+.btn-primary {
+    background: transparent;
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.btn-primary:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+}
+
+.leaflet-routing-container { display: none !important; }
+
+.leaflet-layer, .leaflet-control-zoom-in, .leaflet-control-zoom-out, .leaflet-control-attribution {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+#map { border: 2px solid #333; border-top: none; }
+
+/* --- 7. TABLAS --- */
+.table { color: #ccc; border-color: #333; }
+.table thead th { 
+    color: var(--neon-blue); 
+    border-bottom: 1px solid var(--neon-blue); 
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+.table tbody tr:hover { background-color: rgba(0, 243, 255, 0.05); color: white; }
+
+/* --- 8. ALERTAS --- */
+.alert-success { background: rgba(0,255,136,0.1); border: 1px solid #00ff88; color: #00ff88; }
+.alert-danger { background: rgba(255,77,77,0.1); border: 1px solid #ff4d4d; color: #ff4d4d; }
+.alert-info   { background: rgba(0, 204, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); }
+.alert-warning { background: rgba(255, 189, 0, 0.1); border: 1px solid #ffbd00; color: #ffbd00; }
+
+/* --- 9. SELECT2 (ESTILO NEON) --- */
+.select2-container--default .select2-selection--single {
+    background-color: #000 !important;
+    border: 1px solid #444 !important;
+    border-radius: 5px;
+    height: 38px;
+    color: white !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: white !important;
+    line-height: 36px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: var(--neon-blue) transparent transparent transparent !important;
+}
+.select2-dropdown {
+    background-color: #111 !important;
+    border: 1px solid var(--neon-blue) !important;
+}
+.select2-search--dropdown .select2-search__field {
+    background-color: #222 !important;
+    color: white !important;
+    border: 1px solid #555 !important;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--neon-blue) !important;
+    color: black !important;
+    font-weight: bold;
+}
+.select2-results__option { color: #ccc; }
+
+/* --- 10. ESTILO PARA FECHAS NEÓN (NUEVO) --- */
+.fecha-neon {
+    color: var(--text-lilac) !important;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(224, 170, 255, 0.3);
+}

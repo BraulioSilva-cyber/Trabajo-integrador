@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold" style="font-family: 'Orbitron';">
+            <i class="bi bi-shield-lock-fill me-2"></i> PANEL ADMINISTRATIVO
+        </h2>
+        <a href="{{ url_for('main.home') }}" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Volver al Mapa
+        </a>
+    </div>
+
+    <div class="card mb-4 bg-dark border-secondary">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('admin.dashboard') }}" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label text-muted small">BUSCAR POR USUARIO</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-secondary border-secondary text-white"><i class="bi bi-person"></i></span>
+                        <input type="text" name="usuario" class="form-control bg-black text-white border-secondary" placeholder="Ej: admin" value="{{ request.args.get('usuario', '') }}">
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-muted small">FILTRAR POR FECHA</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-secondary border-secondary text-white"><i class="bi bi-calendar"></i></span>
+                        <input type="date" name="fecha" class="form-control bg-black text-white border-secondary" value="{{ request.args.get('fecha', '') }}">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search"></i> FILTRAR</button>
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary btn-sm"><i class="bi bi-x-lg"></i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-primary shadow-lg" style="border: 1px solid var(--neon-blue);">
+        <div class="card-header bg-transparent text-primary fw-bold d-flex justify-content-between">
+            <span><i class="bi bi-terminal me-2"></i> LOGS DEL SISTEMA</span>
+            <span class="badge bg-dark border border-primary text-primary">{{ logs|length }} REGISTROS</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle table-dark">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--neon-blue);">
+                            <th class="ps-4 text-primary">USUARIO</th>
+                            <th class="text-center text-primary">ACCIÓN</th>
+                            <th class="text-primary">DETALLE</th>
+                            <th class="text-end pe-4 text-primary">FECHA / HORA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td class="ps-4 fw-bold">{{ log.usuario.username }}</td>
+                            
+                            <td class="text-center">
+                                {% if 'DIJKSTRA' in log.accion or 'Dijkstra' in log.accion %}
+                                    <span class="badge border border-warning text-warning bg-transparent px-3">CÁLCULO</span>
+                                {% elif 'CREAR' in log.accion or 'Crear' in log.accion %}
+                                    <span class="badge border border-info text-info bg-transparent px-3">NUEVO</span>
+                                {% elif 'LOGIN' in log.accion or 'Login' in log.accion %}
+                                    <span class="badge border border-success text-success bg-transparent px-3">LOGIN</span>
+                                {% else %}
+                                    <span class="badge border border-light text-light bg-transparent">{{ log.accion }}</span>
+                                {% endif %}
+                            </td>
+                            
+                            <td class="small text-muted">{{ log.detalle }}</td>
+                            
+                            <td class="text-end pe-4 fecha-neon">
+                                <script>
+                                    var fechaServidor = "{{ log.fecha }}";
+                                    if(fechaServidor && fechaServidor != 'None') {
+                                        // Agregamos 'UTC' para que JS sepa que es la hora del servidor
+                                        var fechaUTC = new Date(fechaServidor + " UTC");
+                                        // Escribimos la fecha en formato local de tu PC
+                                        document.write(fechaUTC.toLocaleString());
+                                    } else {
+                                        document.write("--");
+                                    }
+                                </script>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                <h5>No se encontraron movimientos recientes</h5>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

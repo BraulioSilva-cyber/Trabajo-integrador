@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="login-container">
+    <div class="card login-card">
+        <div class="text-center mb-3">
+            <i class="bi bi-cpu fs-1 text-primary mb-2" style="text-shadow: 0 0 10px var(--neon-blue);"></i>
+            <h3 class="fw-bold text-white mb-0" style="font-family: 'Orbitron';">ACCESO</h3>
+        </div>
+
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Usuario</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <input type="text" name="username" class="form-control" placeholder="Nombre de usuario" required autofocus autocomplete="off">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Contraseña</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                    ENTRAR <i class="bi bi-caret-right-fill"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-3 pt-2 border-top border-secondary">
+            <a href="{{ url_for('auth.register') }}" class="text-decoration-none small text-muted hover-neon">
+                Crear cuenta nueva
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Pequeño efecto hover solo para el link de registro */
+    .hover-neon:hover { color: var(--neon-blue) !important; text-shadow: 0 0 5px var(--neon-blue); }
+</style>
+{% endblock %}

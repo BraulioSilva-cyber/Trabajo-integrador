@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        
+        <div class="card mb-4">
+            <div class="card-header text-primary fw-bold" style="font-family: 'Orbitron';">
+                <i class="bi bi-geo-fill me-2"></i> 1. NUEVA CIUDAD
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info py-2 small mb-3">
+                    <i class="bi bi-magic"></i> <strong>Automático:</strong> Al guardar, la ciudad se conectará sola a sus 5 vecinos más cercanos.
+                </div>
+                
+                <form action="{{ url_for('main.crear_ciudad') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">NOMBRE DE LA CIUDAD</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Ej: Nueva Loja" required autocomplete="off">
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">LATITUD</label>
+                            <input type="number" step="any" name="lat" id="inputLat" class="form-control" placeholder="-1.23" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">LONGITUD</label>
+                            <input type="number" step="any" name="lng" id="inputLng" class="form-control" placeholder="-78.45" required>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="bi bi-save"></i> GUARDAR CIUDAD
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-primary mb-4" style="border: 1px solid var(--neon-blue); box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);">
+            <div class="card-header bg-transparent text-primary fw-bold" style="font-family: 'Orbitron';">
+                <i class="bi bi-cpu-fill me-2"></i> 2. IA DIJKSTRA
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">Calcula la mejor ruta en la red híbrida (Automática + Cadena).</p>
+                
+                <form action="{{ url_for('main.home') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-primary">PUNTO DE PARTIDA</label>
+                        <select name="origen" class="form-select" required>
+                            <option value="">¿Dónde estás?</option>
+                            {% for ciudad in ciudades %}
+                                <option value="{{ ciudad.id }}">{{ ciudad.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-primary">DESTINO FINAL</label>
+                        <select name="destino" class="form-select" required>
+                            <option value="">¿A dónde vas?</option>
+                            {% for ciudad in ciudades %}
+                                <option value="{{ ciudad.id }}">{{ ciudad.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <input type="hidden" name="calcular" value="true">
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-rocket-takeoff-fill"></i> CALCULAR RUTA
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if resultado %}
+        <div class="card mb-4 border-success shadow-lg" style="border: 1px solid #00ff88;">
+            <div class="card-header bg-transparent text-success fw-bold" style="font-family: 'Orbitron';">
+                <i class="bi bi-bar-chart-fill me-2"></i> 3. REPORTE DE RUTA
+            </div>
+            <div class="card-body">
+                
+                <div class="mb-3">
+                    <label class="form-label mb-1" style="font-size: 0.7rem; color: #bc13fe !important;">
+                        <i class="bi bi-diagram-3-fill"></i> RUTA LÓGICA (DIJKSTRA)
+                    </label>
+                    <div class="d-flex justify-content-between align-items-center px-2 py-1 border rounded border-secondary bg-dark">
+                        <div>
+                            <span class="text-muted small d-block">Distancia</span>
+                            <span class="text-white fw-bold">{{ distancia|round(2) }} km</span>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">Tiempo Estimado</span>
+                            <span class="text-white fw-bold">{{ tiempo }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label mb-1" style="font-size: 0.7rem; color: #00ccff !important;">
+                        <i class="bi bi-broadcast"></i> RUTA REAL (GPS/SATÉLITE)
+                    </label>
+                    <div class="d-flex justify-content-between align-items-center px-2 py-1 border rounded border-info bg-dark" style="border-color: #00ccff !important;">
+                        <div>
+                            <span class="text-muted small d-block">Distancia Real</span>
+                            <span id="val-dist-real" class="text-white fw-bold">
+                                <span class="spinner-border spinner-border-sm text-info"></span>
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">Tiempo Real</span>
+                            <span id="val-tiempo-real" class="text-white fw-bold">
+                                <span class="spinner-border spinner-border-sm text-info"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="border-color: #333;">
+
+                <div>
+                    <label class="form-label text-warning mb-2" style="font-size: 0.7rem; color: #ffbd00 !important;">
+                        <i class="bi bi-signpost-2-fill me-1"></i> ITINERARIO DE VIAJE
+                    </label>
+                    
+                    <div class="p-2 rounded" style="background: rgba(255, 255, 255, 0.05); max-height: 200px; overflow-y: auto;">
+                        <ul class="list-unstyled mb-0" style="border-left: 2px solid #444; margin-left: 10px; padding-left: 15px;">
+                            {% for ciudad in resultado.coords %}
+                                <li class="mb-3 position-relative">
+                                    <span style="position: absolute; left: -20px; top: 5px; width: 10px; height: 10px; border-radius: 50%; 
+                                        {% if loop.first %} background: #00ff88; box-shadow: 0 0 8px #00ff88;
+                                        {% elif loop.last %} background: #ff4500; box-shadow: 0 0 8px #ff4500;
+                                        {% else %} background: #00ccff;
+                                        {% endif %}">
+                                    </span>
+                                    <div class="text-white fw-bold small">{{ ciudad.nombre }}</div>
+                                    <div class="text-muted" style="font-size: 0.65rem;">
+                                        {% if loop.first %} 🏁 Inicio
+                                        {% elif loop.last %} 🎯 Fin
+                                        {% else %} 📍 Escala
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <div class="col-md-8">
+        <div class="card h-100 shadow-lg">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="text-primary fw-bold" style="font-family: 'Orbitron';"><i class="bi bi-map-fill me-2"></i> RED HÍBRIDA + GPS</span>
+                <button type="button" onclick="limpiarMapaTotal()" class="btn btn-sm btn-secondary" style="font-size: 0.7rem;">
+                    <i class="bi bi-trash"></i> LIMPIAR
+                </button>
+            </div>
+            <div id="map" style="height: 100%; min-height: 600px; cursor: crosshair;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var map = L.map('map').setView([-1.24908, -78.61675], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+
+    var capasRutas = [];
+    var capaDijkstra = null; 
+    var controlOSRM = null;  
+    var tempMarker = null;
+
+    function limpiarMapaTotal() {
+        for(var i=0; i < capasRutas.length; i++) map.removeLayer(capasRutas[i]);
+        capasRutas = [];
+        if (capaDijkstra) { map.removeLayer(capaDijkstra); capaDijkstra = null; }
+        if (controlOSRM) { map.removeControl(controlOSRM); controlOSRM = null; }
+        if (tempMarker) { map.removeLayer(tempMarker); tempMarker = null; }
+        document.getElementById('inputLat').value = '';
+        document.getElementById('inputLng').value = '';
+    }
+
+    map.on('click', function(e) {
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+        document.getElementById('inputLat').value = lat.toFixed(6);
+        document.getElementById('inputLng').value = lng.toFixed(6);
+        if (tempMarker) map.removeLayer(tempMarker);
+        tempMarker = L.marker([lat, lng], {draggable: true}).addTo(map)
+          .bindPopup("📍 <b>Nueva Ubicación</b>").openPopup();
+        tempMarker.on('dragend', function(event) {
+            var position = event.target.getLatLng();
+            document.getElementById('inputLat').value = position.lat.toFixed(6);
+            document.getElementById('inputLng').value = position.lng.toFixed(6);
+        });
+    });
+
+    {% if rutas_existentes %}
+        {% for ruta in rutas_existentes %}
+            var p1 = L.latLng({{ ruta.lat1 }}, {{ ruta.lng1 }});
+            var p2 = L.latLng({{ ruta.lat2 }}, {{ ruta.lng2 }});
+            var lineaGris = L.polyline([p1, p2], {
+                color: '#444', weight: 1, opacity: 0.5, dashArray: '5, 5'
+            }).addTo(map);
+            capasRutas.push(lineaGris);
+        {% endfor %}
+    {% endif %}
+
+    {% for ciudad in ciudades %}
+        {% if ciudad.latitud and ciudad.longitud %}
+            L.circleMarker([{{ ciudad.latitud }}, {{ ciudad.longitud }}], {
+                radius: 6, fillColor: "#00ccff", color: "#ffffff", weight: 2, opacity: 1, fillOpacity: 0.9
+            }).addTo(map)
+            .bindPopup("<div style='color:black; text-align:center;'><b>{{ ciudad.nombre }}</b></div>");
+        {% endif %}
+    {% endfor %}
+
+    {% if resultado %}
+        var caminoCoords = [
+            {% for punto in resultado.coords %}
+                L.latLng({{ punto.lat }}, {{ punto.lng }}),
+            {% endfor %}
+        ];
+
+        // LÍNEA LÓGICA (PÚRPURA)
+        capaDijkstra = L.polyline(caminoCoords, {
+            color: '#bc13fe', weight: 4, opacity: 0.6, dashArray: '10, 10'
+        }).addTo(map).bindPopup("<b>Conexión Lógica</b>");
+
+        // LÍNEA REAL (GPS)
+        controlOSRM = L.Routing.control({
+            waypoints: caminoCoords,
+            routeWhileDragging: false,
+            addWaypoints: false, draggableWaypoints: false, fitSelectedRoutes: false, show: false,
+            createMarker: function() { return null; }, 
+            lineOptions: { styles: [{color: '#00ccff', opacity: 1, weight: 6}] }
+        }).addTo(map);
+
+        // --- EXTRACCIÓN DE DATOS REALES ---
+        controlOSRM.on('routesfound', function(e) {
+            var rutas = e.routes;
+            var summary = rutas[0].summary;
+            
+            // 1. Distancia
+            var distRealKm = (summary.totalDistance / 1000).toFixed(2);
+            var elDist = document.getElementById('val-dist-real');
+            if (elDist) elDist.innerText = distRealKm + ' km';
+
+            // 2. Tiempo (Viene en segundos)
+            var tiempoSegundos = summary.totalTime;
+            var horas = Math.floor(tiempoSegundos / 3600);
+            var minutos = Math.floor((tiempoSegundos % 3600) / 60);
+            
+            var textoTiempo = "";
+            if (horas > 0) textoTiempo += horas + "h ";
+            textoTiempo += minutos + "m";
+
+            var elTiempo = document.getElementById('val-tiempo-real');
+            if (elTiempo) elTiempo.innerText = textoTiempo;
+        });
+
+        map.fitBounds(capaDijkstra.getBounds(), {padding: [100, 100]});
+    {% endif %}
+</script>
+{% endblock %}
