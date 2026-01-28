@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from app.models import Ciudad, Historial
-from flask_login import current_user
+# --- CAMBIO 1: Agregamos login_required aquí ---
+from flask_login import current_user, login_required
 from app import db
 import heapq 
 
@@ -117,6 +118,7 @@ def calcular_dijkstra(inicio_id, fin_id):
 # --- RUTAS WEB ---
 
 @main_bp.route('/', methods=['GET', 'POST'])
+@login_required # --- CAMBIO 2: ¡El candado! Ahora redirige al login ---
 def home():
     resultado = None
     distancia_grafo = 0
@@ -176,6 +178,7 @@ def home():
                            rutas_existentes=rutas_automaticas)
 
 @main_bp.route('/crear_ciudad', methods=['POST'])
+@login_required # También protegemos esta ruta por seguridad
 def crear_ciudad():
     try:
         nombre = request.form.get('nombre')
