@@ -25,26 +25,42 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="{{ url_for('main.home') }}">
                 <i class="bi bi-geo-alt-fill"></i> GeoRutas
             </a>
             
-            <div class="d-flex align-items-center">
-                {% if current_user.is_authenticated %}
-                    <span class="text-white me-3 d-none d-md-block">
-                        <small>Usuario:</small> <strong class="text-primary">{{ current_user.username }}</strong>
-                    </span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
+                <div class="d-flex align-items-center">
                     
-                    {% if current_user.es_admin %}
-                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-warning btn-sm me-2 fw-bold text-dark">
-                            <i class="bi bi-shield-lock"></i> Admin
+                    {% if current_user.is_authenticated %}
+                        <span class="text-white me-3 d-none d-md-block">
+                            <small>Usuario:</small> <strong class="text-primary">{{ current_user.username }}</strong>
+                        </span>
+                        
+                        {% if current_user.es_admin %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-warning btn-sm me-2 fw-bold text-dark">
+                                <i class="bi bi-shield-lock"></i> Admin
+                            </a>
+                        {% endif %}
+
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </a>
+
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-sm fw-bold me-2">
+                            <i class="bi bi-person-circle"></i> Iniciar Sesión
+                        </a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-sm">
+                            Registrarse
                         </a>
                     {% endif %}
-
-                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light btn-sm">
-                        <i class="bi bi-box-arrow-right"></i> Salir
-                    </a>
-                {% endif %}
+                    
+                </div>
             </div>
         </div>
     </nav>
